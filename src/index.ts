@@ -1,18 +1,25 @@
 import * as CryptoJs from "crypto-js";
 
 class Block {
-	public index: number;
-	public hash: string;
-	public previousHash: string;
-	public data: string;
-	public timestamp: number;
-
 	static calculatorBlockHash = (
 		index: number,
 		previousHash: string,
 		timestamp: number,
 		data: string
 	): string => CryptoJs.SHA256(index + previousHash + timestamp + data).toString();
+
+	static validateStructure = (aBlock: Block): boolean =>
+		typeof aBlock.index === "number" &&
+		typeof aBlock.hash === "string" &&
+		typeof aBlock.previousHash === "string" &&
+		typeof aBlock.data === "string" &&
+		typeof aBlock.timestamp === "number";
+
+	public index: number;
+	public hash: string;
+	public previousHash: string;
+	public data: string;
+	public timestamp: number;
 
 	constructor(
 		index: number,
@@ -28,8 +35,6 @@ class Block {
 		this.timestamp = timestamp;
 	}
 }
-
-Block.calculatorBlockHash;
 
 const genesisBlock: Block = new Block(0, "20200202", "", "Hello", 123456);
 
@@ -59,10 +64,42 @@ const createNewBlock = (data: string): Block => {
 		data,
 		newTimestamp
 	);
-
+	addBlock(newBlock);
 	return newBlock;
 };
 
-console.log(createNewBlock("Hello"), createNewBlock("Bye Bye"));
+const getHashforBlock = (aBlock: Block): string =>
+	Block.calculatorBlockHash(
+		aBlock.index,
+		aBlock.previousHash,
+		aBlock.timestamp,
+		aBlock.data
+	);
+
+const isBlockValid = (candidataBlock: Block, previousBlock: Block): boolean => {
+	if (!Block.validateStructure(candidataBlock)) {
+		return false;
+	} else if (previousBlock.index + 1 !== candidataBlock.index) {
+		return false;
+	} else if (previousBlock.hash !== candidataBlock.previousHash) {
+		return false;
+	} else if (getHashforBlock(candidataBlock) !== candidataBlock.hash) {
+		return false;
+	} else {
+		return true;
+	}
+};
+
+const addBlock = (candidataBlock: Block): void => {
+	if (isBlockValid(candidataBlock, getLatestBlock())) {
+		blockChain.push(candidataBlock);
+	}
+};
+
+createNewBlock("second Block");
+createNewBlock("third Block");
+createNewBlock("fourth Block");
+
+console.log(blockChain);
 
 export {};
