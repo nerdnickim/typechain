@@ -1,0 +1,13 @@
+{
+	"name": "typechain",
+	"version": "1.0.0",
+	"description": "Learning Typescript by making a Blockchain with it",
+	"main": "index.js",
+	"repository": "https://github.com/nerdnickim/typechain",
+	"author": "Nerdnickk <56470910+Nerdnickk@users.noreply.github.com>",
+	"license": "MIT",
+	"scripts": {
+		"start": "node index.js",
+		"prestart": "tsc"
+	}
+}
